@@ -10,9 +10,12 @@ class Piece(ABC):
         self._board = board
 
     def make_move(self, to_row: int, to_col: int):
-        if self.can_move(to_row, to_col):
-            self._board[self.row][self.col] = None
-            self._board[to_row][to_col] = self
+        if not self.can_move(to_row, to_col):
+            return False
+        self._board[self.row][self.col] = None
+        self._board[to_row][to_col] = self
+        return True
+
 
     @abstractmethod
     def can_move(self, to_row: int, to_col: int) -> bool:
