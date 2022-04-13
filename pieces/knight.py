@@ -1,5 +1,5 @@
 from colour import Colour
-from piece import Piece
+from pieces.piece import Piece
 
 
 class Knight(Piece):
