@@ -3,6 +3,8 @@ from rook import Rook
 from pawn import Pawn
 from knight import Knight
 from bishop import Bishop
+from queen import Queen
+from king import King
 
 
 class Game:
@@ -36,8 +38,10 @@ class Game:
         self._board[0][5] = Bishop(Colour.WHITE, self._board)
         self._board[7][2] = Bishop(Colour.BLACK, self._board)
         self._board[7][5] = Bishop(Colour.BLACK, self._board)
-
-
+        self._board[0][3] = Queen(Colour.WHITE, self._board)
+        self._board[7][3] = Queen(Colour.BLACK, self._board)
+        self._board[0][4] = King(Colour.WHITE, self._board)
+        self._board[7][4] = King(Colour.BLACK, self._board)
 
     @property
     def current_player(self):
