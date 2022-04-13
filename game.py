@@ -1,6 +1,8 @@
 from colour import Colour
 from rook import Rook
 from pawn import Pawn
+from knight import Knight
+from bishop import Bishop
 
 
 class Game:
@@ -26,6 +28,14 @@ class Game:
         self._board[0][7] = Rook(Colour.WHITE, self._board)
         self._board[7][0] = Rook(Colour.BLACK, self._board)
         self._board[7][7] = Rook(Colour.BLACK, self._board)
+        self._board[0][1] = Knight(Colour.WHITE, self._board)
+        self._board[0][6] = Knight(Colour.WHITE, self._board)
+        self._board[7][1] = Knight(Colour.BLACK, self._board)
+        self._board[7][6] = Knight(Colour.BLACK, self._board)
+        self._board[0][2] = Bishop(Colour.WHITE, self._board)
+        self._board[0][5] = Bishop(Colour.WHITE, self._board)
+        self._board[7][2] = Bishop(Colour.BLACK, self._board)
+        self._board[7][5] = Bishop(Colour.BLACK, self._board)
 
 
 
