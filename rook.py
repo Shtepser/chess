@@ -26,5 +26,5 @@ class Rook(Piece):
 
     @property
     def symbol(self):
-        return 'R'
+        return '♜' if self.colour == Colour.WHITE else '♖'
 

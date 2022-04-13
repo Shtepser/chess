@@ -20,5 +20,5 @@ class Pawn(Piece):
 
     @property
     def symbol(self):
-        return 'p'
+        return '♙' if self.colour == Colour.BLACK else '♟'
 

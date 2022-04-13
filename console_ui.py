@@ -45,16 +45,15 @@ class ConsoleUI:
             self._game.switch_player()
 
     def _show_board(self):
-        print("  ", '-' * 25, sep='')
+        print("  ", '-' * 17, sep='')
         for row_ix in range(7, -1, -1):
             row = self._game._board[row_ix]
             print(f"{row_ix} |", '|'.join(map(self._cell_to_char, row)), '|',
                   sep='')
-            print("  ", '-' * 25, sep='')
-        print("    ", "  ".join(map(str, range(8))), sep='')
+            print("  ", '-' * 17, sep='')
+        print("   ", " ".join(map(str, range(8))), sep='')
     
     @staticmethod
     def _cell_to_char(cell):
-        return f"{cell.colour.name[0].lower()}{cell.symbol}"\
-                if cell is not None else '  '
+        return cell.symbol if cell is not None else ' '
 
