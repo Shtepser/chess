@@ -20,7 +20,7 @@ class ConsoleUI:
                     print("Incorrect input")
                     continue
                 row_from, col_from = [int(i) for i in piece_to_move.split()]
-                piece_to_move = self._game._board[row_from][col_from]
+                piece_to_move = self._game._board.cell(row_from, col_from)
                 if piece_to_move is None:
                     print(f"No piece at cell {row_from},{col_from}")
                     continue
@@ -35,7 +35,7 @@ class ConsoleUI:
                     print("Incorrect input")
                     continue
                 row_to, col_to = [int(i) for i in cell_to_move.split()]
-                cell_to_move = self._game._board[row_to][col_to]
+                cell_to_move = self._game._board.cell(row_to, col_to)
                 if not piece_to_move.can_move(row_to, col_to):
                     print(f"Can't move piece from {row_from},{col_from} to " +\
                           f"{row_to},{col_to}")
@@ -47,7 +47,7 @@ class ConsoleUI:
     def _show_board(self):
         print("  ", '-' * 17, sep='')
         for row_ix in range(7, -1, -1):
-            row = self._game._board[row_ix]
+            row = self._game._board._cells[row_ix]
             print(f"{row_ix} |", '|'.join(map(self._cell_to_char, row)), '|',
                   sep='')
             print("  ", '-' * 17, sep='')

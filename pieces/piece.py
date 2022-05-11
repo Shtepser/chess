@@ -13,8 +13,7 @@ class Piece(ABC):
     def make_move(self, to_row: int, to_col: int):
         if not self.can_move(to_row, to_col):
             return False
-        self._board[self.row][self.col] = None
-        self._board[to_row][to_col] = self
+        self._board.move_piece(self.row, self.col, to_row, to_col)
         self._already_moved = True
         return True
 
@@ -28,10 +27,7 @@ class Piece(ABC):
 
     @property
     def coords(self):
-        for row_ix, row in enumerate(self._board):
-            for col_ix, cell in enumerate(row):
-                if cell == self:
-                    return row_ix, col_ix
+        return self._board.piece_coords(self)
     
     @property
     def row(self):
