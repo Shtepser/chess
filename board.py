@@ -3,24 +3,24 @@ _SIZE = 8
 class Board:
 
     def __init__(self):
-        self._cells = [[None for _ in range(_SIZE)] for _ in range(_SIZE)]
+        self._cells = [None for _ in range(_SIZE ** 2)]
 
     def add_piece(self, row, col, piece_type, colour):
-        self._cells[row][col] = piece_type(colour, self)
+        self._cells[row * _SIZE + col] = piece_type(colour, self)
 
     def move_piece(self, row_from, col_from, row_to, col_to):
-        piece = self._cells[row_from][col_from]
-        self._cells[row_from][col_from] = None
-        self._cells[row_to][col_to] = piece
+        piece = self._cells[row_from * _SIZE + col_from]
+        self._cells[row_from * _SIZE + col_from] = None
+        self._cells[row_to * _SIZE + col_to] = piece
 
     def cell(self, row, col):
-        return self._cells[row][col]
+        return self._cells[row * _SIZE + col]
 
     def piece_coords(self, piece):
-        for row_ix, row in enumerate(self._cells):
-            for col_ix, cell in enumerate(row):
-                if cell == piece:
-                    return row_ix, col_ix
+        for ix, cell in enumerate(self._cells):
+            if cell == piece:
+                row, col = ix // 8, ix % 8
+                return row, col
 
     def exists_free_route(self, row_from, col_from, row_to, col_to):
         if row_from == row_to:
@@ -28,7 +28,6 @@ class Board:
         if col_from == col_to:
             return self._exists_free_vertical_route(row_from, row_to, col_from)
         if abs(row_from - row_to) == abs(col_from - col_to):
-            print("Finding diagonal route...")
             return self._exists_free_diagonal_route(row_from, col_from, row_to, col_to)
         return False
 
