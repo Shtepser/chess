@@ -47,7 +47,7 @@ class ConsoleUI:
     def _show_board(self):
         print("  ", '-' * 17, sep='')
         for row_ix in range(7, -1, -1):
-            row = self._game._board._cells[row_ix]
+            row = [self._game._board.cell(row_ix, col_ix) for col_ix in range(8)]
             print(f"{row_ix} |", '|'.join(map(self._cell_to_char, row)), '|',
                   sep='')
             print("  ", '-' * 17, sep='')
