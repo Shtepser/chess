@@ -15,35 +15,28 @@ class ConsoleUI:
             print(f"Current move: {self._game.current_player.name.capitalize()}")
             moved = False
             while not moved:
-                piece_to_move = input("Row and column of the piece you want to move: ")
-                if len(piece_to_move.split()) != 2\
-                        or not all(map(str.isdigit, piece_to_move.split()))\
-                        or not all(map(lambda x: 0 <= x <= 7,
-                                       map(int, piece_to_move.split()))):
-                    print("Incorrect input")
+                position_of_piece_to_move = input("Position of the piece you want to move: ")
+                try:
+                    piece_to_move = self._game._board[position_of_piece_to_move]
+                except ValueError as e:
+                    print(f"Incorrect input: {str(e)}")
                     continue
-                row_from, col_from = [int(i) for i in piece_to_move.split()]
-                piece_to_move = self._game._board[indexes_to_notation(row_from, col_from)]
                 if piece_to_move is None:
-                    print(f"No piece at cell {row_from},{col_from}")
+                    print(f"No piece at cell {position_of_piece_to_move}")
                     continue
                 if piece_to_move.colour != self._game.current_player:
                     print("You can't move an enemy piece!")
                     continue
-                cell_to_move = input("Row and column of the cell you want to move the piece to: ")
-                if len(cell_to_move.split()) != 2\
-                        or not all(map(str.isdigit, cell_to_move.split()))\
-                        or not all(map(lambda x: 0 <= x <= 7,
-                                       map(int, cell_to_move.split()))):
-                    print("Incorrect input")
+                position_to_move = input("Position of the cell you want to move the piece to: ")
+                try:
+                    if not piece_to_move.can_move(position_to_move):
+                        print(f"Can't move piece from {position_of_piece_to_move} to " +\
+                              f"{position_to_move}")
+                        continue
+                except ValueError as e:
+                    print(f"Incorrect input: {str(e)}")
                     continue
-                row_to, col_to = [int(i) for i in cell_to_move.split()]
-                cell_to_move = self._game._board[indexes_to_notation(row_to, col_to)]
-                if not piece_to_move.can_move(indexes_to_notation(row_to, col_to)):
-                    print(f"Can't move piece from {row_from},{col_from} to " +\
-                          f"{row_to},{col_to}")
-                    continue
-                piece_to_move.make_move(indexes_to_notation(row_to, col_to))
+                piece_to_move.make_move(position_to_move)
                 moved = True
             self._game.switch_player()
 
@@ -52,10 +45,10 @@ class ConsoleUI:
         for row_ix in range(7, -1, -1):
             row = [self._game._board[indexes_to_notation(row_ix, col_ix)]
                    for col_ix in range(8)]
-            print(f"{row_ix} |", '|'.join(map(self._cell_to_char, row)), '|',
+            print(f"{row_ix + 1} |", '|'.join(map(self._cell_to_char, row)), '|',
                   sep='')
             print("  ", '-' * 17, sep='')
-        print("   ", " ".join(map(str, range(8))), sep='')
+        print("   ", " ".join(map(lambda x: chr(ord('A') + x), range(8))), sep='')
     
     @staticmethod
     def _cell_to_char(cell):
