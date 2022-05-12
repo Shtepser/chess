@@ -1,18 +1,22 @@
 from colour import Colour
+from utils import notation_to_indexes
 from pieces.piece import Piece
 
 
 class Bishop(Piece):
 
-    def can_move(self, to_row, to_col):
-        if (to_row, to_col) == self.coords:
+    def can_move(self, to_position):
+        if to_position == self.position:
             return False
-        if self._board.cell(to_row, to_col) is not None\
-                and self._board.cell(to_row, to_col).colour == self.colour:
+        if self._board[to_position] is not None\
+                and self._board[to_position].colour == self.colour:
             return False
-        if abs(self.row - to_row) != abs(self.col - to_col):
+        from_row, from_col = notation_to_indexes(self.position)
+        to_row, to_col = notation_to_indexes(to_position)
+        if abs(from_row - to_row) != abs(from_col - to_col):
             return False
-        return self._board.exists_free_route(self.row, self.col, to_row, to_col)
+        return self._board.exists_free_route(self.position,
+                                             to_position)
 
     @property
     def symbol(self):

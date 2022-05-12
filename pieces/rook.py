@@ -4,14 +4,16 @@ from pieces.piece import Piece
 
 class Rook(Piece):
 
-    def can_move(self, to_row, to_col):
-        if self.coords == (to_row, to_col):
+    def can_move(self, to_position):
+        if self.position == to_position:
             return False
-        if self._board.cell(to_row, to_col) is not None\
-                and self._board.cell(to_row, to_col).colour == self.colour:
+        if self._board[to_position] is not None\
+                and self._board[to_position].colour == self.colour:
             return False
-        if self.row == to_row or self.col == to_col:
-            return self._board.exists_free_route(self.row, self.col, to_row, to_col)
+        if self.position[0] == to_position[0] \
+                or self.position[1] == to_position[1]:
+            return self._board.exists_free_route(self.position,
+                                                 to_position)
         return False
 
     @property

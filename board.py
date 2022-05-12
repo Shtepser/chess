@@ -1,4 +1,8 @@
+from utils import notation_to_indexes, indexes_to_notation
+
+
 _SIZE = 8
+
 
 class Board:
 
@@ -8,7 +12,9 @@ class Board:
     def add_piece(self, row, col, piece_type, colour):
         self._cells[row * _SIZE + col] = piece_type(colour, self)
 
-    def move_piece(self, row_from, col_from, row_to, col_to):
+    def move_piece(self, from_, to):
+        row_from, col_from = notation_to_indexes(from_)
+        row_to, col_to = notation_to_indexes(to)
         piece = self._cells[row_from * _SIZE + col_from]
         self._cells[row_from * _SIZE + col_from] = None
         self._cells[row_to * _SIZE + col_to] = piece
@@ -16,13 +22,15 @@ class Board:
     def cell(self, row, col):
         return self._cells[row * _SIZE + col]
 
-    def piece_coords(self, piece):
+    def piece_position(self, piece):
         for ix, cell in enumerate(self._cells):
             if cell == piece:
                 row, col = ix // 8, ix % 8
-                return row, col
+                return indexes_to_notation(row, col)
 
-    def exists_free_route(self, row_from, col_from, row_to, col_to):
+    def exists_free_route(self, from_, to):
+        row_from, col_from = notation_to_indexes(from_)
+        row_to, col_to = notation_to_indexes(to)
         if row_from == row_to:
             return self._exists_free_horizontal_route(row_from, col_from, col_to)
         if col_from == col_to:
@@ -54,4 +62,12 @@ class Board:
             if self.cell(row_ix, col_ix) is not None:
                 return False
         return True
+
+    def __getitem__(self, key: str):
+        row, col = notation_to_indexes(key)
+        return self._cells[row * _SIZE + col]
+
+    def __setitem__(self, key: str, value):
+        row, col = notation_to_indexes(key)
+        self._cells[row * _SIZE + col] = value
 

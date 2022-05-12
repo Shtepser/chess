@@ -4,13 +4,14 @@ from pieces.piece import Piece
 
 class Pawn(Piece):
 
-    def can_move(self, to_row, to_col):
-        if to_col != self.col:
+    def can_move(self, to_position):
+        if to_position[0] != self.file:
             return False
-        if to_row == self.row - 1 and 0 <= to_row <= 7\
+        to_rank = int(to_position[1])
+        if to_rank == self.rank - 1 and 0 <= to_rank <= 7\
                 and self._colour == Colour.BLACK:
             return True
-        if to_row == self.row + 1 and 0 <= to_row <= 7\
+        if to_rank == self.rank + 1 and 0 <= to_rank <= 7\
                 and self._colour == Colour.WHITE:
             return True
         return False

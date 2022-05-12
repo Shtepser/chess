@@ -10,15 +10,15 @@ class Piece(ABC):
         self._board = board
         self._already_moved = False
 
-    def make_move(self, to_row: int, to_col: int):
-        if not self.can_move(to_row, to_col):
+    def make_move(self, to_position: str):
+        if not self.can_move(to_position):
             return False
-        self._board.move_piece(self.row, self.col, to_row, to_col)
+        self._board.move_piece(self.position, to_position)
         self._already_moved = True
         return True
 
     @abstractmethod
-    def can_move(self, to_row: int, to_col: int) -> bool:
+    def can_move(self, to_position: str) -> bool:
         pass
 
     @property
@@ -26,16 +26,16 @@ class Piece(ABC):
         return self._colour
 
     @property
-    def coords(self):
-        return self._board.piece_coords(self)
+    def position(self):
+        return self._board.piece_position(self)
     
     @property
-    def row(self):
-        return self.coords[0]
+    def rank(self):
+        return int(self.position[1])
 
     @property
-    def col(self):
-        return self.coords[1]
+    def file(self):
+        return self.position[0]
 
     @property
     def already_moved(self):
