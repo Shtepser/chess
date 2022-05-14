@@ -1,24 +1,15 @@
 from colour import Colour
-from utils import notation_to_indexes
 from pieces.piece import Piece
+from utils import on_same_diagonal, on_same_file, on_same_rank
 
 
 class Queen(Piece):
 
-    def can_move(self, to_position):
-        if to_position == self.position:
-            return False
-        if self._board[to_position] is not None\
-                and self._board[to_position].colour == self.colour:
-            return False
-        from_row, from_col = notation_to_indexes(self.position)
-        to_row, to_col = notation_to_indexes(to_position)
-        if from_row == to_row \
-                or from_col == to_col \
-                or abs(from_row - to_row) == abs(from_col - to_col):
-            return self._board.exists_free_route(self.position,
+    def _can_move(self, to_position):
+        return any(map(lambda x: x(self.position, to_position),
+                       [on_same_file, on_same_rank, on_same_diagonal])) \
+                and self._board.exists_free_route(self.position,
                                                  to_position)
-        return False
 
     @property
     def symbol(self):

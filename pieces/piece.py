@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-
 from colour import Colour
 
 
@@ -17,8 +16,16 @@ class Piece(ABC):
         self._already_moved = True
         return True
 
-    @abstractmethod
     def can_move(self, to_position: str) -> bool:
+        if to_position == self.position:
+            return False
+        if self._board[to_position] is not None\
+                and self._board[to_position].colour == self.colour:
+            return False
+        return self._can_move(to_position)
+
+    @abstractmethod
+    def _can_move(self, to_position: str) -> bool:
         pass
 
     @property
