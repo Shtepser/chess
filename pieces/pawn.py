@@ -6,10 +6,10 @@ from utils import notation_to_indexes, on_same_file
 class Pawn(Piece):
 
     def _can_move(self, to_position):
-        return self._can_attack(to_position) \
+        return self.can_attack(to_position) \
                 or self._can_move_ordinary(to_position)
 
-    def _can_attack(self, position):
+    def can_attack(self, position: str) -> bool:
         return self._is_attacked_cell(position) \
                 and self._board[position] is not None \
                 and self._board[position].colour != self.colour

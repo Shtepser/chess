@@ -28,6 +28,9 @@ class Piece(ABC):
     def _can_move(self, to_position: str) -> bool:
         pass
 
+    def can_attack(self, position: str) -> bool:
+        return self.can_move(position)
+
     @property
     def colour(self):
         return self._colour
@@ -35,7 +38,7 @@ class Piece(ABC):
     @property
     def position(self):
         return self._board.piece_position(self)
-    
+
     @property
     def rank(self):
         return int(self.position[1])

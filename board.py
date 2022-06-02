@@ -32,12 +32,25 @@ class Board:
         row_from, col_from = notation_to_indexes(from_)
         row_to, col_to = notation_to_indexes(to)
         if row_from == row_to:
-            return self._exists_free_horizontal_route(row_from, col_from, col_to)
+            return self._exists_free_horizontal_route(row_from, col_from,
+                                                      col_to)
         if col_from == col_to:
-            return self._exists_free_vertical_route(row_from, row_to, col_from)
+            return self._exists_free_vertical_route(row_from, row_to,
+                                                    col_from)
         if abs(row_from - row_to) == abs(col_from - col_to):
-            return self._exists_free_diagonal_route(row_from, col_from, row_to, col_to)
+            return self._exists_free_diagonal_route(row_from, col_from,
+                                                    row_to, col_to)
         return False
+
+    def is_under_attack(self, position, colour):
+        return any(map(lambda x: x.can_attack(position),
+                       self._all_pieces(colour)))
+
+    def _all_pieces(self, colour=None):
+        pieces = filter(lambda x: x is not None, self._cells)
+        if colour is not None:
+            pieces = filter(lambda x: x.colour == colour, pieces)
+        return pieces
 
     def _exists_free_horizontal_route(self, row, col_from, col_to):
         first_col, last_col = sorted([col_from, col_to])
