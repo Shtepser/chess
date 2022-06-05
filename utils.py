@@ -12,7 +12,11 @@ def notation_to_indexes(notation: str):
 
 
 def indexes_to_notation(row: int, col: int):
-    return f"{chr(ord('A') + col)}{row + 1}"
+    return f"{col_to_file(col)}{row + 1}"
+
+
+def col_to_file(col: int):
+    return chr(ord('A') + col)
 
 
 def on_same_file(first_cell, second_cell):

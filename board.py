@@ -9,7 +9,8 @@ class Board:
     def __init__(self):
         self._cells = [None for _ in range(_SIZE ** 2)]
 
-    def add_piece(self, row, col, piece_type, colour):
+    def add_piece(self, position, piece_type, colour):
+        row, col = notation_to_indexes(position)
         self._cells[row * _SIZE + col] = piece_type(colour, self)
 
     def move_piece(self, from_, to):

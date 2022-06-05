@@ -1,6 +1,7 @@
 from board import Board
 from colour import Colour
 from pieces import Pawn, Rook, Knight, Bishop, Queen, King
+from utils import col_to_file
 
 
 class Game:
@@ -17,24 +18,25 @@ class Game:
 
     def _initial_placement(self):
         for col_ix in range(8):
-            self._board.add_piece(1, col_ix, Pawn, Colour.WHITE)
-            self._board.add_piece(6, col_ix, Pawn, Colour.BLACK)
-        self._board.add_piece(0, 0, Rook, Colour.WHITE)
-        self._board.add_piece(0, 7, Rook, Colour.WHITE)
-        self._board.add_piece(7, 0, Rook, Colour.BLACK)
-        self._board.add_piece(7, 7, Rook, Colour.BLACK)
-        self._board.add_piece(0, 1, Knight, Colour.WHITE)
-        self._board.add_piece(0, 6, Knight, Colour.WHITE)
-        self._board.add_piece(7, 1, Knight, Colour.BLACK)
-        self._board.add_piece(7, 6, Knight, Colour.BLACK)
-        self._board.add_piece(0, 2, Bishop, Colour.WHITE)
-        self._board.add_piece(0, 5, Bishop, Colour.WHITE)
-        self._board.add_piece(7, 2, Bishop, Colour.BLACK)
-        self._board.add_piece(7, 5, Bishop, Colour.BLACK)
-        self._board.add_piece(0, 3, Queen, Colour.WHITE)
-        self._board.add_piece(7, 3, Queen, Colour.BLACK)
-        self._board.add_piece(0, 4, King, Colour.WHITE)
-        self._board.add_piece(7, 4, King, Colour.BLACK)
+            file = col_to_file(col_ix)
+            self._board.add_piece(f"{file}2", Pawn, Colour.WHITE)
+            self._board.add_piece(f"{file}7", Pawn, Colour.BLACK)
+        self._board.add_piece("A1", Rook, Colour.WHITE)
+        self._board.add_piece("H1", Rook, Colour.WHITE)
+        self._board.add_piece("A8", Rook, Colour.BLACK)
+        self._board.add_piece("H8", Rook, Colour.BLACK)
+        self._board.add_piece("B1", Knight, Colour.WHITE)
+        self._board.add_piece("G1", Knight, Colour.WHITE)
+        self._board.add_piece("B8", Knight, Colour.BLACK)
+        self._board.add_piece("G8", Knight, Colour.BLACK)
+        self._board.add_piece("C1", Bishop, Colour.WHITE)
+        self._board.add_piece("F1", Bishop, Colour.WHITE)
+        self._board.add_piece("C8", Bishop, Colour.BLACK)
+        self._board.add_piece("F8", Bishop, Colour.BLACK)
+        self._board.add_piece("D1", Queen, Colour.WHITE)
+        self._board.add_piece("D8", Queen, Colour.BLACK)
+        self._board.add_piece("E1", King, Colour.WHITE)
+        self._board.add_piece("E8", King, Colour.BLACK)
 
     @property
     def current_player(self):
