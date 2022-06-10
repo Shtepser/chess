@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
+from itertools import chain
+
 from colour import Colour
+from typing import Iterable
 
 
 class Piece(ABC):
@@ -29,7 +32,23 @@ class Piece(ABC):
         pass
 
     def can_attack(self, position: str) -> bool:
-        return self.can_move(position)
+        return self._board[position] is not None \
+               and self._board[position].colour != self.colour \
+               and self.can_move(position)
+
+    def possible_ordinary_moves(self) -> Iterable[str]:
+        return {f"{file}{rank}"
+                for rank in range(1, 9) for file in 'ABCDEFGH'
+                if self.can_move(f"{file}{rank}")
+                and not self.can_attack(f"{file}{rank}")}
+
+    def possible_attacks(self) -> Iterable[str]:
+        return {f"{file}{rank}"
+                for rank in range(1, 9) for file in 'ABCDEFGH'
+                if self.can_attack(f"{file}{rank}")}
+
+    def possible_moves(self) -> Iterable[str]:
+        return chain(self.possible_ordinary_moves(), self.possible_attacks())
 
     @property
     def colour(self):
@@ -55,4 +74,3 @@ class Piece(ABC):
     @abstractmethod
     def symbol(self):
         pass
-
