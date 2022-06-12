@@ -12,43 +12,62 @@ class Piece(ABC):
         self._board = board
         self._already_moved = False
 
-    def make_move(self, to_position: str):
-        if not self.can_move(to_position):
+    def make_move(self, to_position: str) -> bool:
+        """
+        Makes an attempt to move the piece from its current position to another
+
+        :param to_position: the position to try to move the piece to
+        :return: True if the attempt was successful, False otherwise
+        """
+        if not self._can_move(to_position):
             return False
         self._board.move_piece(self.position, to_position)
         self._already_moved = True
         return True
 
-    def can_move(self, to_position: str) -> bool:
-        if to_position == self.position:
-            return False
-        if self._board[to_position] is not None\
-                and self._board[to_position].colour == self.colour:
-            return False
-        return self._can_move(to_position)
-
-    @abstractmethod
-    def _can_move(self, to_position: str) -> bool:
-        pass
-
-    def can_attack(self, position: str) -> bool:
-        return self._board[position] is not None \
-               and self._board[position].colour != self.colour \
-               and self.can_move(position)
+    def possible_moves(self) -> Iterable[str]:
+        """
+        :return: All the squares the piece can be moved to
+        """
+        return chain(self.possible_ordinary_moves(), self.squares_under_attack())
 
     def possible_ordinary_moves(self) -> Iterable[str]:
+        """
+        :return: All the squares the piece can be moved to ordinary
+                 (without taking an enemy piece)
+        """
         return {f"{file}{rank}"
                 for rank in range(1, 9) for file in 'ABCDEFGH'
-                if self.can_move(f"{file}{rank}")
-                and not self.can_attack(f"{file}{rank}")}
+                if self._can_move(f"{file}{rank}")
+                and not self.attacks_square(f"{file}{rank}")}
 
-    def possible_attacks(self) -> Iterable[str]:
+    def squares_under_attack(self) -> Iterable[str]:
+        """
+        :return: All the squares on which the piece can take an enemy piece
+        """
         return {f"{file}{rank}"
                 for rank in range(1, 9) for file in 'ABCDEFGH'
-                if self.can_attack(f"{file}{rank}")}
+                if self.attacks_square(f"{file}{rank}")}
 
-    def possible_moves(self) -> Iterable[str]:
-        return chain(self.possible_ordinary_moves(), self.possible_attacks())
+    @abstractmethod
+    def _can_move(self, to_square: str) -> bool:
+        """
+        Checks if the piece can be moved from its current position to another
+
+        :param to_square: position the possibility to move to is checked
+        :return: can the piece be moved or not
+        """
+        if to_square == self.position:
+            return False
+        if self._board[to_square] is not None\
+                and self._board[to_square].colour == self.colour:
+            return False
+        return True
+
+    def attacks_square(self, square: str) -> bool:
+        return self._board[square] is not None \
+               and self._board[square].colour != self.colour \
+               and self._can_move(square)
 
     @property
     def colour(self):
@@ -74,3 +93,4 @@ class Piece(ABC):
     @abstractmethod
     def symbol(self):
         pass
+

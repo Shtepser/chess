@@ -24,7 +24,7 @@ from pieces import Rook, Pawn, Bishop, King, Knight, Queen
 def test_bishop_movement(position: str,
                          another_pieces: Iterable[Tuple[type, Colour, str]],
                          possible_moves: Iterable[str]):
-    _validate_possible_moves(Bishop, position, another_pieces, possible_moves)
+    _assert_possible_moves_equals(Bishop, position, another_pieces, possible_moves)
 
 
 @pytest.mark.parametrize("position,another_pieces,possible_moves", [
@@ -34,11 +34,14 @@ def test_bishop_movement(position: str,
     ("E6",
      [],
      {"E5", "E7", "D5", "D6", "D7", "F5", "F6", "F7"}),
+    ("E1",
+     [(Queen, Colour.WHITE, "D1")],
+     {"D2", "E2", "F2", "F1"})
 ])
 def test_king_movement(position: str,
                        another_pieces: Iterable[Tuple[type, Colour, str]],
                        possible_moves: Iterable[str]):
-    _validate_possible_moves(King, position, another_pieces, possible_moves)
+    _assert_possible_moves_equals(King, position, another_pieces, possible_moves)
 
 
 @pytest.mark.parametrize("position,another_pieces,possible_moves", [
@@ -61,7 +64,7 @@ def test_king_movement(position: str,
 def test_knight_movement(position: str,
                          another_pieces: Iterable[Tuple[type, Colour, str]],
                          possible_moves: Iterable[str]):
-    _validate_possible_moves(Knight, position, another_pieces, possible_moves)
+    _assert_possible_moves_equals(Knight, position, another_pieces, possible_moves)
 
 
 @pytest.mark.parametrize("position,colour,already_moved,"
@@ -112,7 +115,7 @@ def test_pawn_movement(position: str, colour: Colour, already_moved: bool,
 def test_queen_movement(position: str,
                         another_pieces: Iterable[Tuple[type, Colour, str]],
                         possible_moves: Iterable[str]):
-    _validate_possible_moves(Queen, position, another_pieces, possible_moves)
+    _assert_possible_moves_equals(Queen, position, another_pieces, possible_moves)
 
 
 @pytest.mark.parametrize("position,another_pieces,possible_moves", [
@@ -131,11 +134,11 @@ def test_queen_movement(position: str,
 def test_rook_movement(position: str,
                        another_pieces: Iterable[Tuple[type, Colour, str]],
                        possible_moves: Iterable[str]):
-    _validate_possible_moves(Rook, position, another_pieces, possible_moves)
+    _assert_possible_moves_equals(Rook, position, another_pieces, possible_moves)
 
 
-def _validate_possible_moves(piece_type, position: str,
-                             another_pieces, possible_moves):
+def _assert_possible_moves_equals(piece_type, position: str,
+                                  another_pieces, possible_moves):
     board = Board()
     board.add_piece(position, piece_type, Colour.WHITE)
     for type_, colour, pos in another_pieces:

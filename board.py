@@ -7,25 +7,25 @@ _SIZE = 8
 class Board:
 
     def __init__(self):
-        self._cells = [None for _ in range(_SIZE ** 2)]
+        self._squares = [None for _ in range(_SIZE ** 2)]
 
     def add_piece(self, position, piece_type, colour):
         row, col = notation_to_indexes(position)
-        self._cells[row * _SIZE + col] = piece_type(colour, self)
+        self._squares[row * _SIZE + col] = piece_type(colour, self)
 
     def move_piece(self, from_, to):
         row_from, col_from = notation_to_indexes(from_)
         row_to, col_to = notation_to_indexes(to)
-        piece = self._cells[row_from * _SIZE + col_from]
-        self._cells[row_from * _SIZE + col_from] = None
-        self._cells[row_to * _SIZE + col_to] = piece
+        piece = self._squares[row_from * _SIZE + col_from]
+        self._squares[row_from * _SIZE + col_from] = None
+        self._squares[row_to * _SIZE + col_to] = piece
 
-    def cell(self, row, col):
-        return self._cells[row * _SIZE + col]
+    def square(self, row, col):
+        return self._squares[row * _SIZE + col]
 
     def piece_position(self, piece):
-        for ix, cell in enumerate(self._cells):
-            if cell == piece:
+        for ix, square in enumerate(self._squares):
+            if square == piece:
                 row, col = ix // 8, ix % 8
                 return indexes_to_notation(row, col)
 
@@ -44,11 +44,11 @@ class Board:
         return False
 
     def is_under_attack(self, position, colour):
-        return any(map(lambda x: x.can_attack(position),
+        return any(map(lambda x: x.attacks_square(position),
                        self._all_pieces(colour)))
 
     def _all_pieces(self, colour=None):
-        pieces = filter(lambda x: x is not None, self._cells)
+        pieces = filter(lambda x: x is not None, self._squares)
         if colour is not None:
             pieces = filter(lambda x: x.colour == colour, pieces)
         return pieces
@@ -56,14 +56,14 @@ class Board:
     def _exists_free_horizontal_route(self, row, col_from, col_to):
         first_col, last_col = sorted([col_from, col_to])
         for col in range(first_col + 1, last_col):
-            if self.cell(row, col) is not None:
+            if self.square(row, col) is not None:
                 return False
         return True
 
     def _exists_free_vertical_route(self, row_from, row_to, col):
         first_row, last_row = sorted([row_from, row_to])
         for row in range(first_row + 1, last_row):
-            if self.cell(row, col) is not None:
+            if self.square(row, col) is not None:
                 return False
         return True
 
@@ -73,15 +73,15 @@ class Board:
         for step in range(1, abs(row_from - row_to)):
             row_ix = row_from + row_step * step
             col_ix = col_from + col_step * step
-            if self.cell(row_ix, col_ix) is not None:
+            if self.square(row_ix, col_ix) is not None:
                 return False
         return True
 
     def __getitem__(self, key: str):
         row, col = notation_to_indexes(key)
-        return self._cells[row * _SIZE + col]
+        return self.square(row, col)
 
     def __setitem__(self, key: str, value):
         row, col = notation_to_indexes(key)
-        self._cells[row * _SIZE + col] = value
+        self._squares[row * _SIZE + col] = value
 

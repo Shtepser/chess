@@ -24,21 +24,21 @@ class ConsoleUI:
                     print(f"Incorrect input: {str(e)}")
                     continue
                 if piece_to_move is None:
-                    print(f"No piece at cell {position_of_piece_to_move}")
+                    print(f"No piece at square {position_of_piece_to_move}")
                     continue
                 if piece_to_move.colour != self._game.current_player:
                     print("You can't move an enemy piece!")
                     continue
-                position_to_move = input("Position of the cell you want to move the piece to: ")
+                position_to_move = input("Position of the square you want to move the piece to: ")
                 try:
-                    if not piece_to_move.can_move(position_to_move):
+                    success = piece_to_move.make_move(position_to_move)
+                    if not success:
                         print(f"Can't move piece from {position_of_piece_to_move} to " +\
                               f"{position_to_move}")
                         continue
                 except ValueError as e:
                     print(f"Incorrect input: {str(e)}")
                     continue
-                piece_to_move.make_move(position_to_move)
                 moved = True
             self._game.switch_player()
 
@@ -47,12 +47,12 @@ class ConsoleUI:
         for row_ix in range(7, -1, -1):
             row = [self._game._board[indexes_to_notation(row_ix, col_ix)]
                    for col_ix in range(8)]
-            print(f"{row_ix + 1} |", '|'.join(map(self._cell_to_char, row)), '|',
+            print(f"{row_ix + 1} |", '|'.join(map(self._square_to_char, row)), '|',
                   sep='')
             print("  ", '-' * 17, sep='')
         print("   ", " ".join(map(lambda x: chr(ord('A') + x), range(8))), sep='')
     
     @staticmethod
-    def _cell_to_char(cell):
-        return cell.symbol if cell is not None else ' '
+    def _square_to_char(square):
+        return square.symbol if square is not None else ' '
 
