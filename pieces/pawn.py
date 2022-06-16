@@ -6,14 +6,14 @@ from utils import notation_to_indexes, on_same_file
 class Pawn(Piece):
 
     def _can_move(self, to_square):
-        if not super(Pawn, self)._can_move(to_square):
+        if not super()._can_move(to_square):
             return False
-        return self.attacks_square(to_square) or self._can_move_ordinary(to_square)
+        return self._can_take(to_square) or self._can_move_ordinary(to_square)
 
-    def attacks_square(self, square: str) -> bool:
-        return self._is_attacked_square(square) \
-               and self._board[square] is not None \
-               and self._board[square].colour != self.colour
+    def _can_take(self, at_square: str) -> bool:
+        return self._is_attacked_square(at_square) \
+               and self._board[at_square] is not None \
+               and self._board[at_square].colour != self.colour
 
     def _can_move_ordinary(self, position):
         if not on_same_file(self.position, position) \
@@ -29,9 +29,15 @@ class Pawn(Piece):
         return 1 <= (self.rank - to_rank) <= possible_distance \
                and 0 <= to_rank <= 7
 
-    def _is_attacked_square(self, position):
+    def _is_attacked_square(self, square):
+        """
+        Is the square one of the possibly attacked by the pawn
+
+        :param square: the square to check
+        :return:
+        """
         self_row, self_col = notation_to_indexes(self.position)
-        row, col = notation_to_indexes(position)
+        row, col = notation_to_indexes(square)
         if abs(col - self_col) != 1:
             return False
         if self._colour == Colour.WHITE:

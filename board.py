@@ -44,8 +44,8 @@ class Board:
         return False
 
     def is_under_attack(self, position, colour):
-        return any(map(lambda x: x.attacks_square(position),
-                       self._all_pieces(colour)))
+        # TODO implement
+        pass
 
     def _all_pieces(self, colour=None):
         pieces = filter(lambda x: x is not None, self._squares)
