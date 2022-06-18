@@ -1,3 +1,7 @@
+from itertools import product
+from typing import Iterable
+
+
 def notation_to_indexes(notation: str):
     if len(notation) != 2:
         raise ValueError(f"{notation} is not a valid square position"
@@ -37,4 +41,9 @@ def is_nearest(first_square, second_square):
     first_row, first_col = notation_to_indexes(first_square)
     second_row, second_col = notation_to_indexes(second_square)
     return max([abs(first_row - second_row), abs(first_col - second_col)]) == 1
+
+
+def all_possible_squares() -> Iterable[str]:
+    return map(lambda x: indexes_to_notation(x[0], x[1]),
+               product(range(8), range(8)))
 

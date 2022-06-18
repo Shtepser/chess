@@ -4,6 +4,8 @@ from itertools import chain
 from colour import Colour
 from typing import Iterable
 
+from utils import all_possible_squares
+
 
 class Piece(ABC):
 
@@ -42,26 +44,20 @@ class Piece(ABC):
         :return: All the squares the piece can be moved to ordinary
                  (without taking an enemy piece)
         """
-        return {f"{file}{rank}"
-                for rank in range(1, 9) for file in 'ABCDEFGH'
-                if self._can_move_ordinary(f"{file}{rank}")}
+        return filter(self._can_move_ordinary, all_possible_squares())
 
     def possible_takes(self) -> Iterable[str]:
         """
         :return: All the squares on which the piece can currently take an enemy piece
         """
-        return {f"{file}{rank}"
-                for rank in range(1, 9) for file in 'ABCDEFGH'
-                if self._can_take(f"{file}{rank}")}
+        return filter(self._can_take, all_possible_squares())
 
     def squares_under_attack(self) -> Iterable[str]:
         """
         :return: All the squares that are attacked by the piece
         """
-        return {f"{file}{rank}"
-                for rank in range(1, 9) for file in 'ABCDEFGH'
-                if self._can_move(f"{file}{rank}")}
-    
+        return filter(self._can_move, all_possible_squares())
+
     def attacks_square(self, square: str) -> bool:
         """
         :return: is the given square being attacked by the piece or not
@@ -101,8 +97,8 @@ class Piece(ABC):
         :return: can piece take an enemy piece at the given square or not
         """
         return self._board[at_square] is not None \
-                and self._board[at_square].colour != self.colour \
-                and self._can_move(at_square)
+            and self._board[at_square].colour != self.colour \
+            and self._can_move(at_square)
 
     @property
     def colour(self) -> Colour:
