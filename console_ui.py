@@ -13,8 +13,8 @@ class ConsoleUI:
             self._show_board()
             print()
             print(f"Current move: {self._game.current_player.name.capitalize()}")
-            # print("Pieces:")
-            # print(*[f"{type(piece)} at {piece.position}" for piece in self._game._board._all_pieces(self._game.current_player)], sep='\n')
+            if self._game.current_player_is_in_check():
+                print("KING IN CHECK!")
             moved = False
             while not moved:
                 position_of_piece_to_move = input("Position of the piece you want to move: ")
