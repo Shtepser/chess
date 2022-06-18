@@ -55,11 +55,18 @@ class Piece(ABC):
                 if self._can_take(f"{file}{rank}")}
 
     def squares_under_attack(self) -> Iterable[str]:
-        # TODO implement me
         """
         :return: All the squares that are attacked by the piece
         """
-        pass
+        return {f"{file}{rank}"
+                for rank in range(1, 9) for file in 'ABCDEFGH'
+                if self._can_move(f"{file}{rank}")}
+    
+    def attacks_square(self, square: str) -> bool:
+        """
+        :return: is the given square being attacked by the piece or not
+        """
+        return self._can_move(square)
 
     @abstractmethod
     def _can_move(self, to_square: str) -> bool:

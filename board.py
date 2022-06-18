@@ -1,5 +1,6 @@
+from colour import Colour
+from pieces import King
 from utils import notation_to_indexes, indexes_to_notation
-
 
 _SIZE = 8
 
@@ -19,6 +20,21 @@ class Board:
         piece = self._squares[row_from * _SIZE + col_from]
         self._squares[row_from * _SIZE + col_from] = None
         self._squares[row_to * _SIZE + col_to] = piece
+
+    def is_king_in_check(self, colour: Colour) -> bool:
+        """
+        Check if the king of the given colour is in check
+
+        :param colour: the colour of the king that is checked for check
+        :return: is the king of the given colour is in check or not
+        """
+        king = next(filter(lambda x: isinstance(x, King),
+                           self._all_pieces(colour)))
+        if king is None:
+            raise RuntimeError(f"The {colour.name.lower()} is missing!")
+        opposite_colour = Colour.BLACK if colour is Colour.WHITE \
+            else Colour.WHITE
+        return self._is_under_attack(king.position, opposite_colour)
 
     def square(self, row, col):
         return self._squares[row * _SIZE + col]
@@ -43,9 +59,17 @@ class Board:
                                                     row_to, col_to)
         return False
 
-    def is_under_attack(self, position, colour):
-        # TODO implement
-        pass
+    def _is_under_attack(self, square: str, colour: Colour) -> bool:
+        """
+        Check if the square is being attacked by
+        any of the pieces of the given colour
+
+        :param square: the square checked for being under attack
+        :param colour: the colour of the pieces that are checked
+                       to attack the square
+        """
+        return any(map(lambda x: x.attacks_square(square),
+                       self._all_pieces(colour)))
 
     def _all_pieces(self, colour=None):
         pieces = filter(lambda x: x is not None, self._squares)
@@ -84,4 +108,3 @@ class Board:
     def __setitem__(self, key: str, value):
         row, col = notation_to_indexes(key)
         self._squares[row * _SIZE + col] = value
-
