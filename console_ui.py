@@ -1,9 +1,10 @@
+from game import Game
 from utils import indexes_to_notation
 
 
 class ConsoleUI:
 
-    def __init__(self, game):
+    def __init__(self, game: Game):
         self._game = game
         print("The game has started\n\n")
 
@@ -17,30 +18,22 @@ class ConsoleUI:
                 print("KING IN CHECK!")
             moved = False
             while not moved:
-                position_of_piece_to_move = input("Position of the piece you want to move: ")
-                try:
-                    piece_to_move = self._game._board[position_of_piece_to_move]
-                except ValueError as e:
-                    print(f"Incorrect input: {str(e)}")
-                    continue
-                if piece_to_move is None:
-                    print(f"No piece at square {position_of_piece_to_move}")
-                    continue
-                if piece_to_move.colour != self._game.current_player:
-                    print("You can't move an enemy piece!")
-                    continue
-                position_to_move = input("Position of the square you want to move the piece to: ")
-                try:
-                    success = piece_to_move.make_move(position_to_move)
-                    if not success:
-                        print(f"Can't move piece from {position_of_piece_to_move} to " +\
-                              f"{position_to_move}")
-                        continue
-                except ValueError as e:
-                    print(f"Incorrect input: {str(e)}")
-                    continue
-                moved = True
-            self._game.switch_player()
+                square_from = input("Position of the piece you want to move: ")
+                square_to = input("Position of the square you want to move the piece to: ")
+                result = self._game.make_move(square_from, square_to) 
+                match result:
+                    case Game.MoveResult.NO_SUCH_SQUARE_FROM | \
+                            Game.MoveResult.NO_SUCH_SQUARE_TO:
+                        print(f"Incorrect input: {square_from}:{square_to}!")
+                    case Game.MoveResult.NO_PIECE_AT_SQUARE:
+                        print(f"No piece at square {square_from}!")
+                    case Game.MoveResult.PIECE_IS_ENEMY:
+                        print("You can't move an enemy piece!")
+                    case Game.MoveResult.INCORRECT_MOVE:
+                        print(f"Can't move piece from {square_from} to " +\
+                              f"{square_to}")
+                    case _:
+                        moved = True
 
     def _show_board(self):
         print("  ", '-' * 17, sep='')

@@ -3,20 +3,26 @@ from typing import Iterable
 
 
 def notation_to_indexes(notation: str):
-    if len(notation) != 2:
+    if not is_correct_notation(notation):
         raise ValueError(f"{notation} is not a valid square position"
                           " in chess notation")
     file, rank = notation
     col = ord(file) - ord('A')
     row = int(rank) - 1
-    if not (0 <= row <= 7 and 0 <= col <= 7):
-        raise ValueError(f"{notation} is not a valid square position"
-                          " in chess notation")
     return row, col
 
 
 def indexes_to_notation(row: int, col: int):
     return f"{col_to_file(col)}{row + 1}"
+
+
+def is_correct_notation(notation: str) -> bool:
+    if len(notation) != 2:
+        return False
+    file, rank = notation
+    col = ord(file) - ord('A')
+    row = int(rank) - 1
+    return 0 <= row <= 7 and 0 <= col <= 7
 
 
 def col_to_file(col: int):

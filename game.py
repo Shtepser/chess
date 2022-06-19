@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from enum import auto, IntEnum
+
 from board import Board
 from colour import Colour
 from pieces import Pawn, Rook, Knight, Bishop, Queen, King
-from utils import col_to_file
+from utils import col_to_file, is_correct_notation
 
 
 class Game:
@@ -11,7 +15,24 @@ class Game:
         self._current_player = Colour.WHITE
         self._initial_placement()
 
-    def switch_player(self):
+    def make_move(self, square_from: str, square_to: str) \
+            -> MoveResult:
+        if not is_correct_notation(square_from):
+            return Game.MoveResult.NO_SUCH_SQUARE_FROM
+        if not is_correct_notation(square_to):
+            return Game.MoveResult.NO_SUCH_SQUARE_TO
+        piece = self._board[square_from]
+        if piece is None:
+            return Game.MoveResult.NO_PIECE_AT_SQUARE
+        if piece.colour != self.current_player:
+            return Game.MoveResult.PIECE_IS_ENEMY
+        move_succeeded = piece.make_move(square_to)
+        if not move_succeeded:
+            return Game.MoveResult.INCORRECT_MOVE
+        self._switch_player()
+        return Game.MoveResult.SUCCESS
+
+    def _switch_player(self):
         self._current_player = Colour.WHITE \
             if self._current_player == Colour.BLACK \
             else Colour.BLACK
@@ -44,4 +65,12 @@ class Game:
     @property
     def current_player(self):
         return self._current_player
+
+    class MoveResult(IntEnum):
+        SUCCESS = auto()
+        NO_SUCH_SQUARE_FROM = auto()
+        NO_SUCH_SQUARE_TO = auto()
+        NO_PIECE_AT_SQUARE = auto()
+        PIECE_IS_ENEMY = auto()
+        INCORRECT_MOVE = auto()
 
