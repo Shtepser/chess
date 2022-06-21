@@ -1,3 +1,6 @@
+import sys
+
+
 from game import Game
 from console_ui import ConsoleUI
 
@@ -9,5 +12,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
 
