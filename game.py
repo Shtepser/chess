@@ -66,6 +66,10 @@ class Game:
     def current_player(self):
         return self._current_player
 
+    @property
+    def board(self):
+        return self._board
+
     class MoveResult(IntEnum):
         SUCCESS = auto()
         NO_SUCH_SQUARE_FROM = auto()
