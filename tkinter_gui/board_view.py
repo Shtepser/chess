@@ -76,7 +76,7 @@ class BoardView(Frame):
         self._canvas = Canvas(self)
         self._canvas.grid(column=0, row=0)
         self._canvas.bind("<Button-1>", self.clicked)
-        self._canvas.configure(width=500, height=500)
+        self._canvas.configure(width=480, height=480)
         self.redraw()
 
     def clicked(self, event: Event):

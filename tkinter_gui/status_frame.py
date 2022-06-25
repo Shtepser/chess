@@ -19,13 +19,14 @@ class StatusFrame(Frame):
         self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=1)
 
-        current_player_label = Label(self, textvariable=self._current_player)
+        current_player_label = Label(self, textvariable=self._current_player, font=("Roman", 12))
         current_player_label.grid(column=0, row=0)
 
-        status_label = Label(self, textvariable=self._status)
+        status_label = Label(self, textvariable=self._status, font=("Roman", 12))
         status_label.grid(column=0, row=1)
 
-        last_move_result_label = Label(self, textvariable=self._last_move_result)
+        last_move_result_label = Label(self, textvariable=self._last_move_result,
+                                       font=("Roman", 12))
         last_move_result_label.grid(column=0, row=2)
 
     def update(self):
