@@ -1,4 +1,4 @@
-from tkinter import Tk, Canvas
+from tkinter import Tk
 from tkinter.constants import W, N, E, S
 from tkinter.ttk import Frame, Label, Button
 
@@ -14,6 +14,10 @@ class TkInterGUI:
         self._root.title("Chess")
         self._root.columnconfigure(0, weight=1)
         self._root.rowconfigure(0, weight=1)
+
+        self._root.minsize(800, 600)
+        self._root.maxsize(800, 600)
+
         screen = Frame(self._root, padding=(10, 10, 10, 10))
         screen.grid(column=0, row=0, sticky=(N, W, E, S))
         screen.columnconfigure(0, weight=1)
@@ -43,9 +47,6 @@ class TkInterGUI:
         draw.grid(column=0, row=0)
         resign = Button(footer, text="Resign")
         resign.grid(column=1, row=0)
-
-        self._root.minsize(800, 600)
-        self._root.maxsize(800, 600)
 
     def run(self):
         self._root.mainloop()

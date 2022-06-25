@@ -56,11 +56,11 @@ class BoardView(Frame):
         self._board = board
         self._canvas = Canvas(self)
         self._canvas.grid(column=0, row=0)
-        self._canvas.bind("<Button-1>", lambda x: self._redraw())
+        self._canvas.bind("<Button-1>", lambda x: print(x))
         self._canvas.configure(width=500, height=500)
-        self.update_params()
+        self.redraw()
 
-    def _redraw(self):
+    def redraw(self):
         self.update_params()
         self._clear_canvas()
         self._draw_grid()
@@ -69,6 +69,7 @@ class BoardView(Frame):
         self._draw_pieces()
 
     def update_params(self):
+        self.update()
         self.params = BoardView.BoardViewParams(self._canvas, self.SIZE)
 
     def _clear_canvas(self):
