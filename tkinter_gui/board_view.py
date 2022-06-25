@@ -1,8 +1,7 @@
 from __future__ import annotations
 from tkinter import Frame, Canvas, Event
 
-from board import Board
-from tkinter_gui.selected_piece import SelectedPiece
+from tkinter_gui.game_state import GameState
 from utils import indexes_to_notation, notation_to_indexes
 
 
@@ -71,14 +70,13 @@ class BoardView(Frame):
         def possible_turns_params(self):
             return {"outline": ""}
 
-    def __init__(self, board: Board, selected_piece: SelectedPiece, *args, **kwargs):
+    def __init__(self, game_state: GameState, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._board = board
+        self._game_state = game_state
         self._canvas = Canvas(self)
         self._canvas.grid(column=0, row=0)
         self._canvas.bind("<Button-1>", self.clicked)
         self._canvas.configure(width=500, height=500)
-        self._selected_piece = selected_piece
         self.redraw()
 
     def clicked(self, event: Event):
@@ -97,7 +95,7 @@ class BoardView(Frame):
         self._draw_marks()
         self._fill_squares()
         self._draw_pieces()
-        if self._selected_piece.is_set():
+        if self._game_state.selected_piece.is_set():
             self._draw_possible_moves()
 
     def update_params(self):
@@ -170,7 +168,8 @@ class BoardView(Frame):
     def _draw_pieces(self):
         for i in range(self.SIZE):
             for j in range(self.SIZE):
-                piece = self._board[indexes_to_notation(self.SIZE - j - 1, i)]
+                square = indexes_to_notation(self.SIZE - j - 1, i)
+                piece = self._game_state.board[square]
                 if piece is not None:
                     piece_x = self.params.board_offset + self.params.square_side * i \
                               + self.params.square_side // 2
@@ -180,7 +179,8 @@ class BoardView(Frame):
                                              **self.params.pieces_params)
 
     def _draw_possible_moves(self):
-        for move in self._selected_piece.possible_moves():
+        selected_piece = self._game_state.selected_piece
+        for move in selected_piece.possible_moves():
             row, col = notation_to_indexes(move)
             row = self.SIZE - row - 1
             left_corner = self.params.board_offset + col * self.params.square_side \
@@ -190,7 +190,7 @@ class BoardView(Frame):
                            + self.params.square_side // 2 \
                            - self.params.possible_turns_size // 2
             fill = self.params.possible_moves_colour \
-                if move in self._selected_piece.possible_ordinary_moves() \
+                if move in selected_piece.possible_ordinary_moves() \
                 else self.params.possible_attacks_colour
             self._canvas.create_oval(left_corner, upper_corner,
                                      left_corner + self.params.possible_turns_size,

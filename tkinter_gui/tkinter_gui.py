@@ -1,33 +1,19 @@
 from tkinter import Event
-from tkinter.ttk import Frame
 
 from game import Game
-from tkinter_gui.controls_frame import ControlsFrame
 from tkinter_gui.game_state import GameState
 from tkinter_gui.main_window import MainWindow
 from tkinter_gui.selected_piece import SelectedPiece
-from tkinter_gui.board_view import BoardView
-from tkinter_gui.status_frame import StatusFrame
 
 
 class TkInterGUI:
 
     def __init__(self, game: Game):
         self._game = game
-        self._game_state = GameState(game)
-        self._window = MainWindow()
-
         self._selected_piece = SelectedPiece()
+        self._game_state = GameState(game, self._selected_piece)
 
-        self._header = StatusFrame(self._game_state, self._window.screen)
-        self._header.grid(column=0, row=0)
-
-        self._central_frame = BoardView(self._game.board, self._selected_piece,
-                                        self._window.screen)
-        self._central_frame.grid(column=0, row=1)
-
-        self._footer = ControlsFrame(self._game_state, self._window.screen)
-        self._footer.grid(column=0, row=2)
+        self._window = MainWindow(self._game_state)
 
         self.__bind_event_with_data("<<Square-Clicked>>", self.square_clicked)
 
@@ -44,9 +30,6 @@ class TkInterGUI:
 
     def update(self):
         self._window.update()
-        self._central_frame.update()
-        self._header.update()
-        self._footer.update()
 
     def run(self):
         self.update()
