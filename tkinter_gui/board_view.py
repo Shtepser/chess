@@ -1,5 +1,5 @@
 from __future__ import annotations
-from tkinter import Frame, Canvas
+from tkinter import Frame, Canvas, Event
 
 from board import Board
 from utils import indexes_to_notation
@@ -56,9 +56,18 @@ class BoardView(Frame):
         self._board = board
         self._canvas = Canvas(self)
         self._canvas.grid(column=0, row=0)
-        self._canvas.bind("<Button-1>", lambda x: print(x))
+        self._canvas.bind("<Button-1>", self.clicked)
         self._canvas.configure(width=500, height=500)
         self.redraw()
+
+    def clicked(self, event: Event):
+        clicked_row = (event.y - self.params.board_offset) // self.params.square_side
+        clicked_col = (event.x - self.params.board_offset) // self.params.square_side
+        if 0 <= clicked_row < self.SIZE and 0 <= clicked_col < self.SIZE:
+            clicked_square = indexes_to_notation(self.SIZE - clicked_row - 1,
+                                                 clicked_col)
+            self.event_generate("<<Square-Clicked>>",
+                                data={"clicked_square": clicked_square})
 
     def redraw(self):
         self.update_params()
