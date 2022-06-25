@@ -2,7 +2,7 @@ from __future__ import annotations
 from tkinter import Frame, Canvas, Event
 
 from board import Board
-from tkinter_gui.SelectedPiece import SelectedPiece
+from tkinter_gui.selected_piece import SelectedPiece
 from utils import indexes_to_notation, notation_to_indexes
 
 

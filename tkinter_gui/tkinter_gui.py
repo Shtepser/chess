@@ -1,57 +1,33 @@
-from tkinter import Tk, Event, Variable
-from tkinter.constants import W, N, E, S
-from tkinter.ttk import Frame, Label, Button
+from tkinter import Event
+from tkinter.ttk import Frame
 
 from game import Game
-from tkinter_gui.SelectedPiece import SelectedPiece
+from tkinter_gui.controls_frame import ControlsFrame
+from tkinter_gui.game_state import GameState
+from tkinter_gui.main_window import MainWindow
+from tkinter_gui.selected_piece import SelectedPiece
 from tkinter_gui.board_view import BoardView
+from tkinter_gui.status_frame import StatusFrame
 
 
 class TkInterGUI:
 
     def __init__(self, game: Game):
         self._game = game
-        self._root = Tk()
-        self._root.title("Chess")
-        self._root.columnconfigure(0, weight=1)
-        self._root.rowconfigure(0, weight=1)
-
-        self._root.minsize(800, 600)
-        self._root.maxsize(800, 600)
+        self._game_state = GameState(game)
+        self._window = MainWindow()
 
         self._selected_piece = SelectedPiece()
 
-        screen = Frame(self._root, padding=(10, 10, 10, 10))
-        screen.grid(column=0, row=0, sticky=(N, W, E, S))
-        screen.columnconfigure(0, weight=1)
-        screen.rowconfigure(0, weight=1)
-        screen.rowconfigure(1, weight=1)
-        screen.rowconfigure(2, weight=1)
+        self._header = StatusFrame(self._game_state, self._window.screen)
+        self._header.grid(column=0, row=0)
 
-        header = Frame(screen)
-        header.columnconfigure(0, weight=1)
-        header.rowconfigure(0, weight=1)
-        header.rowconfigure(1, weight=1)
-        header.grid(column=0, row=0)
-        self._player_text = Variable()
-        self._player_text.initialize("")
-        player_label = Label(header, textvariable=self._player_text)
-        player_label.grid(column=0, row=0)
-        self._status = Label(header, text="Make your turn!")
-        self._status.grid(column=0, row=1)
-
-        self._central_frame = BoardView(self._game.board, self._selected_piece, screen)
+        self._central_frame = BoardView(self._game.board, self._selected_piece,
+                                        self._window.screen)
         self._central_frame.grid(column=0, row=1)
 
-        footer = Frame(screen)
-        footer.grid(column=0, row=2)
-        footer.columnconfigure(0, weight=1)
-        footer.columnconfigure(1, weight=1)
-        footer.rowconfigure(0, weight=1)
-        draw = Button(footer, text="Offer Draw")
-        draw.grid(column=0, row=0)
-        resign = Button(footer, text="Resign")
-        resign.grid(column=1, row=0)
+        self._footer = ControlsFrame(self._game_state, self._window.screen)
+        self._footer.grid(column=0, row=2)
 
         self.__bind_event_with_data("<<Square-Clicked>>", self.square_clicked)
 
@@ -59,7 +35,7 @@ class TkInterGUI:
         clicked_square = event.data["clicked_square"]
         if not self._selected_piece.is_set():
             piece = self._game.board[clicked_square]
-            if piece.colour == self._game.current_player:
+            if piece is not None and piece.colour == self._game.current_player:
                 self._selected_piece.set(self._game.board[clicked_square])
         else:
             self._game.make_move(self._selected_piece.position, clicked_square)
@@ -67,13 +43,14 @@ class TkInterGUI:
         self.update()
 
     def update(self):
-        self._player_text.set(f"Current move: {self._game.current_player.name.lower()}")
-        self._root.update()
+        self._window.update()
         self._central_frame.update()
+        self._header.update()
+        self._footer.update()
 
     def run(self):
         self.update()
-        self._root.mainloop()
+        self._window.mainloop()
 
     def __bind_event_with_data(self, sequence, func, add=None):
         """
@@ -88,11 +65,11 @@ class TkInterGUI:
         def substitute(*args):
             e = lambda: None
             e.data = eval(args[0])
-            e.widget = self._root
+            e.widget = self._window
             return e,
 
-        funcid = self._root._register(func, substitute, needcleanup=1)
+        funcid = self._window._register(func, substitute, needcleanup=1)
         cmd = """{0}if {{"[{1} %d]" == "break"}} break\n"""\
             .format('+' if add else '', funcid)
-        self._root.tk.call("bind", self._root._w, sequence, cmd)
+        self._window.tk.call("bind", self._window._w, sequence, cmd)
 
