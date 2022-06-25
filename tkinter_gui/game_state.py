@@ -7,6 +7,7 @@ class GameState:
     def __init__(self, game: Game, selected_piece: SelectedPiece):
         self._game = game
         self._selected_piece = selected_piece
+        self.last_move_status = Game.MoveResult.SUCCESS
 
     @property
     def current_player(self):

@@ -24,7 +24,9 @@ class TkInterGUI:
             if piece is not None and piece.colour == self._game.current_player:
                 self._selected_piece.set(self._game.board[clicked_square])
         else:
-            self._game.make_move(self._selected_piece.position, clicked_square)
+            move_result = self._game.make_move(self._selected_piece.position,
+                                               clicked_square)
+            self._game_state.last_move_status = move_result
             self._selected_piece.reset()
         self.update()
 
