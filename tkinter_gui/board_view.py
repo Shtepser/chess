@@ -2,7 +2,8 @@ from __future__ import annotations
 from tkinter import Frame, Canvas, Event
 
 from board import Board
-from utils import indexes_to_notation
+from tkinter_gui.SelectedPiece import SelectedPiece
+from utils import indexes_to_notation, notation_to_indexes
 
 
 class BoardView(Frame):
@@ -14,12 +15,15 @@ class BoardView(Frame):
         _OFFSET = 10
         _COORDINATES_WIDTH = 25
         _BOARD_OFFSET = _OFFSET + _COORDINATES_WIDTH
-        _WHITE_SQUARES_COLOUR = "#ffa12e"
-        _BLACK_SQUARES_COLOUR = "#9e2d1e"
+        _WHITE_SQUARES_COLOUR = "#f0a12e"
+        _BLACK_SQUARES_COLOUR = "#8e2d1e"
         _MARKS_FONT = "Roman"
         _MARKS_FONT_SIZE = 14
         _PIECES_FONT = "Arial"
         _PIECES_FONT_SIZE = 40
+        _POSSIBLE_MOVES_COLOUR = "#5c75ff"
+        _POSSIBLE_ATTACKS_COLOUR = "#755d9a"
+        _POSSIBLE_TURNS_SIZE = 23
 
         def __init__(self, canvas_to_draw: Canvas, size: int):
             width, height = canvas_to_draw.winfo_width(), \
@@ -51,13 +55,30 @@ class BoardView(Frame):
             return {"anchor": "center",
                     "font": (self._PIECES_FONT, str(self._PIECES_FONT_SIZE))}
 
-    def __init__(self, board: Board, *args, **kwargs):
+        @property
+        def possible_turns_size(self):
+            return self._POSSIBLE_TURNS_SIZE
+
+        @property
+        def possible_moves_colour(self):
+            return self._POSSIBLE_MOVES_COLOUR
+
+        @property
+        def possible_attacks_colour(self):
+            return self._POSSIBLE_ATTACKS_COLOUR
+
+        @property
+        def possible_turns_params(self):
+            return {"outline": ""}
+
+    def __init__(self, board: Board, selected_piece: SelectedPiece, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._board = board
         self._canvas = Canvas(self)
         self._canvas.grid(column=0, row=0)
         self._canvas.bind("<Button-1>", self.clicked)
         self._canvas.configure(width=500, height=500)
+        self._selected_piece = selected_piece
         self.redraw()
 
     def clicked(self, event: Event):
@@ -76,10 +97,16 @@ class BoardView(Frame):
         self._draw_marks()
         self._fill_squares()
         self._draw_pieces()
+        if self._selected_piece.is_set():
+            self._draw_possible_moves()
 
     def update_params(self):
-        self.update()
+        super().update()
         self.params = BoardView.BoardViewParams(self._canvas, self.SIZE)
+
+    def update(self):
+        super().update()
+        self.redraw()
 
     def _clear_canvas(self):
         self._canvas.delete("all")
@@ -151,4 +178,23 @@ class BoardView(Frame):
                               + self.params.square_side // 2
                     self._canvas.create_text(piece_x, piece_y, text=piece.symbol,
                                              **self.params.pieces_params)
+
+    def _draw_possible_moves(self):
+        for move in self._selected_piece.possible_moves():
+            row, col = notation_to_indexes(move)
+            row = self.SIZE - row - 1
+            left_corner = self.params.board_offset + col * self.params.square_side \
+                          + self.params.square_side // 2 \
+                          - self.params.possible_turns_size // 2
+            upper_corner = self.params.board_offset + row * self.params.square_side \
+                           + self.params.square_side // 2 \
+                           - self.params.possible_turns_size // 2
+            fill = self.params.possible_moves_colour \
+                if move in self._selected_piece.possible_ordinary_moves() \
+                else self.params.possible_attacks_colour
+            self._canvas.create_oval(left_corner, upper_corner,
+                                     left_corner + self.params.possible_turns_size,
+                                     upper_corner + self.params.possible_turns_size,
+                                     fill=fill,
+                                     **self.params.possible_turns_params)
 

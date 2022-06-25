@@ -1,9 +1,9 @@
-import ast
-from tkinter import Tk, Event
+from tkinter import Tk, Event, Variable
 from tkinter.constants import W, N, E, S
 from tkinter.ttk import Frame, Label, Button
 
 from game import Game
+from tkinter_gui.SelectedPiece import SelectedPiece
 from tkinter_gui.board_view import BoardView
 
 
@@ -19,6 +19,8 @@ class TkInterGUI:
         self._root.minsize(800, 600)
         self._root.maxsize(800, 600)
 
+        self._selected_piece = SelectedPiece()
+
         screen = Frame(self._root, padding=(10, 10, 10, 10))
         screen.grid(column=0, row=0, sticky=(N, W, E, S))
         screen.columnconfigure(0, weight=1)
@@ -31,13 +33,15 @@ class TkInterGUI:
         header.rowconfigure(0, weight=1)
         header.rowconfigure(1, weight=1)
         header.grid(column=0, row=0)
-        player = Label(header, text="Current turn: white")
-        player.grid(column=0, row=0)
-        status = Label(header, text="Make your turn!")
-        status.grid(column=0, row=1)
+        self._player_text = Variable()
+        self._player_text.initialize("")
+        player_label = Label(header, textvariable=self._player_text)
+        player_label.grid(column=0, row=0)
+        self._status = Label(header, text="Make your turn!")
+        self._status.grid(column=0, row=1)
 
-        central_frame = BoardView(self._game.board, screen)
-        central_frame.grid(column=0, row=1)
+        self._central_frame = BoardView(self._game.board, self._selected_piece, screen)
+        self._central_frame.grid(column=0, row=1)
 
         footer = Frame(screen)
         footer.grid(column=0, row=2)
@@ -52,9 +56,23 @@ class TkInterGUI:
         self.__bind_event_with_data("<<Square-Clicked>>", self.square_clicked)
 
     def square_clicked(self, event: Event):
-        print(event.data)
+        clicked_square = event.data["clicked_square"]
+        if not self._selected_piece.is_set():
+            piece = self._game.board[clicked_square]
+            if piece.colour == self._game.current_player:
+                self._selected_piece.set(self._game.board[clicked_square])
+        else:
+            self._game.make_move(self._selected_piece.position, clicked_square)
+            self._selected_piece.reset()
+        self.update()
+
+    def update(self):
+        self._player_text.set(f"Current move: {self._game.current_player.name.lower()}")
+        self._root.update()
+        self._central_frame.update()
 
     def run(self):
+        self.update()
         self._root.mainloop()
 
     def __bind_event_with_data(self, sequence, func, add=None):
