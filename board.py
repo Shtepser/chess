@@ -40,6 +40,15 @@ class Board:
             else Colour.WHITE
         return self._is_under_attack(king.position, opposite_colour)
 
+    def is_checkmate(self, colour: Colour) -> bool:
+        return self.is_king_in_check(colour) and \
+            all(map(lambda x: len(list(x.possible_moves())) == 0,
+                    self._all_pieces(colour)))
+
+    def is_stalemate(self, current_move_colour: Colour) -> bool:
+        return all(map(lambda x: len(list(x.possible_moves())) == 0,
+                       self._all_pieces(current_move_colour)))
+
     def square(self, row, col):
         return self._squares[row * _SIZE + col]
 
