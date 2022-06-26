@@ -5,10 +5,8 @@ from utils import is_nearest
 
 class King(Piece):
 
-    def _can_move(self, to_square):
-        if not super()._can_move(to_square):
-            return False
-        return is_nearest(self.position, to_square)
+    def attacks_square(self, square) -> bool:
+        return is_nearest(self.position, square)
 
     @property
     def symbol(self):

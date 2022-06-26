@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from itertools import chain
-
-from colour import Colour
 from typing import Iterable
 
+
+from colour import Colour
 from utils import all_possible_squares
 
 
@@ -56,15 +57,14 @@ class Piece(ABC):
         """
         :return: All the squares that are attacked by the piece
         """
-        return filter(self._can_move, all_possible_squares())
+        return filter(self.attacks_square, all_possible_squares())
 
+    @abstractmethod
     def attacks_square(self, square: str) -> bool:
         """
         :return: is the given square being attacked by the piece or not
         """
-        return self._can_move(square)
 
-    @abstractmethod
     def _can_move(self, to_square: str) -> bool:
         """
         Checks if the piece can be moved from its current position to another
@@ -72,12 +72,8 @@ class Piece(ABC):
         :param to_square: position the possibility to move to is checked
         :return: can the piece be moved or not
         """
-        if to_square == self.position:
-            return False
-        if self._board[to_square] is not None\
-                and self._board[to_square].colour == self.colour:
-            return False
-        return True
+        return self.attacks_square(to_square) \
+               and self._is_move_on_general_rules(to_square)
 
     def _can_move_ordinary(self, to_square: str) -> bool:
         """
@@ -99,6 +95,29 @@ class Piece(ABC):
         return self._board[at_square] is not None \
             and self._board[at_square].colour != self.colour \
             and self._can_move(at_square)
+
+    def _is_move_on_general_rules(self, to_square: str) -> bool:
+        if to_square == self.position:
+            return False
+        if self._board[to_square] is not None \
+                and self._board[to_square].colour == self.colour:
+            return False
+        if self._move_leads_to_check(to_square):
+            return False
+        return True
+
+    def _move_leads_to_check(self, to_square: str) -> bool:
+        """
+        Checks if movement of the piece to the square does not lead to 'in check'
+         of own king
+
+        :param to_square: the checked square
+        :return:
+        """
+        board_after_move = deepcopy(self._board)
+        board_after_move[to_square] = board_after_move[self.position]
+        board_after_move[self.position] = None
+        return board_after_move.is_king_in_check(self.colour)
 
     @property
     def colour(self) -> Colour:
@@ -132,5 +151,4 @@ class Piece(ABC):
         """
         :return: UTF-8 character for the piece
         """
-        pass
 

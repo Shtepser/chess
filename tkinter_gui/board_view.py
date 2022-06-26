@@ -121,7 +121,7 @@ class BoardView(Frame):
         x_start = y_start = self.params.board_offset - self.params.line_width // 2
         x_end = y_end = self.params.side_length \
                         + self.params.board_offset \
-                        + self.params.line_width // 2,
+                        + self.params.line_width // 2
         for i in range(self.SIZE + 1):
             line_offset = i * self.params.square_side + self.params.board_offset
             self._canvas.create_line(x_start, line_offset, x_end, line_offset,
@@ -149,7 +149,7 @@ class BoardView(Frame):
     def _draw_file_marks(self):
         top_row_top_offset = self.params.board_offset // 2
         lower_row_top_offset = self.params.board_offset + self.params.side_length \
-                             + self.params.board_offset // 2,
+                             + self.params.board_offset // 2
         for i in range(self.SIZE):
             file = chr(ord('A') + i)
             left_offset = self.params.board_offset + i * self.params.square_side \

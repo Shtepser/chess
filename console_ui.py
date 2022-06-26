@@ -63,7 +63,7 @@ class ConsoleUI:
     def _draw_board(self):
         print("  ", '-' * 17, sep='')
         for row_ix in range(7, -1, -1):
-            row = [self._game._board[indexes_to_notation(row_ix, col_ix)]
+            row = [self._game.board[indexes_to_notation(row_ix, col_ix)]
                    for col_ix in range(8)]
             print(f"{row_ix + 1} |", '|'.join(map(self._square_to_char,
                                                   row)), '|', sep='')

@@ -1,5 +1,8 @@
+from typing import Iterable
+
 from colour import Colour
 from pieces import King
+from pieces.piece import Piece
 from utils import notation_to_indexes, indexes_to_notation
 
 _SIZE = 8
@@ -28,10 +31,11 @@ class Board:
         :param colour: the colour of the king that is checked for check
         :return: is the king of the given colour is in check or not
         """
-        king = next(filter(lambda x: isinstance(x, King),
-                           self._all_pieces(colour)))
-        if king is None:
-            raise RuntimeError(f"The {colour.name.lower()} is missing!")
+        try:
+            king = next(filter(lambda x: isinstance(x, King),
+                               self._all_pieces(colour)))
+        except StopIteration:
+            raise RuntimeError(f"The {colour.name.lower()} king is missing!")
         opposite_colour = Colour.BLACK if colour is Colour.WHITE \
             else Colour.WHITE
         return self._is_under_attack(king.position, opposite_colour)
@@ -71,7 +75,7 @@ class Board:
         return any(map(lambda x: x.attacks_square(square),
                        self._all_pieces(colour)))
 
-    def _all_pieces(self, colour=None):
+    def _all_pieces(self, colour=None) -> Iterable[Piece]:
         pieces = filter(lambda x: x is not None, self._squares)
         if colour is not None:
             pieces = filter(lambda x: x.colour == colour, pieces)
@@ -108,3 +112,10 @@ class Board:
     def __setitem__(self, key: str, value):
         row, col = notation_to_indexes(key)
         self._squares[row * _SIZE + col] = value
+
+    def __deepcopy__(self, memodict={}):
+        copy_ = Board()
+        for piece in self._all_pieces():
+            copy_.add_piece(piece.position, type(piece), piece.colour)
+        return copy_
+

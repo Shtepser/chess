@@ -32,6 +32,9 @@ class Game:
         self._switch_player()
         return Game.MoveResult.SUCCESS
 
+    def current_player_is_in_check(self):
+        return self._board.is_king_in_check(self.current_player)
+
     def _switch_player(self):
         self._current_player = Colour.WHITE \
             if self._current_player == Colour.BLACK \
@@ -58,9 +61,6 @@ class Game:
         self._board.add_piece("D8", Queen, Colour.BLACK)
         self._board.add_piece("E1", King, Colour.WHITE)
         self._board.add_piece("E8", King, Colour.BLACK)
-
-    def current_player_is_in_check(self):
-        return self._board.is_king_in_check(self.current_player)
 
     @property
     def current_player(self):
