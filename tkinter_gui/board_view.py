@@ -25,12 +25,19 @@ class BoardView(Frame):
         _POSSIBLE_TURNS_SIZE = 23
 
         def __init__(self, canvas_to_draw: Canvas, size: int):
-            width, height = canvas_to_draw.winfo_width(), \
-                            canvas_to_draw.winfo_height()
+            self._canvas = canvas_to_draw
+            self._size = size
+            self.square_side = None
+            self.line_width = None
+            self.side_length = None
+            self.update()
+
+        def update(self):
+            width, height = self._canvas.winfo_width(), self._canvas.winfo_height()
             side_length = min(width, height) - self._BOARD_OFFSET * 2
-            self.square_side = int(side_length / size)
+            self.square_side = int(side_length / self._size)
             self.line_width = int(self.square_side * self._LINE_WIDTH_COEFFICIENT)
-            self.side_length = self.square_side * size
+            self.side_length = self.square_side * self._size
 
         @property
         def board_offset(self):
@@ -77,6 +84,7 @@ class BoardView(Frame):
         self._canvas.grid(column=0, row=0)
         self._canvas.bind("<Button-1>", self.clicked)
         self._canvas.configure(width=480, height=480)
+        self.params = BoardView.BoardViewParams(self._canvas, self.SIZE)
         self.redraw()
 
     def clicked(self, event: Event):
@@ -100,7 +108,7 @@ class BoardView(Frame):
 
     def update_params(self):
         super().update()
-        self.params = BoardView.BoardViewParams(self._canvas, self.SIZE)
+        self.params.update()
 
     def update(self):
         super().update()
