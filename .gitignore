@@ -1,5 +1,3 @@
-syntax: glob
-
 venv/**
 **/__pycache__/**
 .idea/**
